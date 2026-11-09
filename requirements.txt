@@ -1,0 +1,8 @@
+# Direct dependencies are pinned. The full resolved set is recorded in the image
+# at /opt/dfir/python-packages.txt; OS packages and transitive dependencies can move.
+volatility3[full]==2.28.2
+python-evtx==0.8.1
+regipy==6.5.0
+oletools==0.60.2
+# Dependency used by the archived Silva_Multi_Yara community plugin.
+pygit2==1.21.0

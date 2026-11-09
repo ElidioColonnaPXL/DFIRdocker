@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+mkdir -p /cache/volatility3 /cache/symbols
+exec /opt/venv/bin/vol --cache-path /cache/volatility3 -s '/cache/symbols;/symbols' -p /plugins "$@"

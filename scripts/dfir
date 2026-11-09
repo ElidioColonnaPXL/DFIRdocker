@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+case_dir=${DFIR_CASE_DIR:-"$repo_dir/case"}
+mkdir -p -- "$case_dir"/{evidence,output,symbols,plugins,cache}
+case_dir=$(cd -- "$case_dir" && pwd)
+args=(run --rm --init --user "$(id -u):$(id -g)"
+    --cap-drop ALL --security-opt no-new-privileges
+    --network "${DFIR_NETWORK:-none}"
+    --mount "type=bind,src=$case_dir/evidence,dst=/evidence,readonly"
+    --mount "type=bind,src=$case_dir/output,dst=/output"
+    --mount "type=bind,src=$case_dir/symbols,dst=/symbols,readonly"
+    --mount "type=bind,src=$case_dir/plugins,dst=/plugins,readonly"
+    --mount "type=bind,src=$case_dir/cache,dst=/cache")
+if [[ -t 0 && -t 1 ]]; then args+=(-it); else args+=(-i); fi
+if [[ $# -eq 0 ]]; then set -- bash; fi
+exec docker "${args[@]}" "${DFIR_IMAGE:-dfirdocker:local}" "$@"

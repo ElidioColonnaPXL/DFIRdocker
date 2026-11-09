@@ -1,0 +1,20 @@
+#!/bin/sh
+set -eu
+if [ "$#" -eq 0 ] || [ "$1" = "--list" ]; then
+    printf '%s\n' 'Archived community source directories (availability does not imply compatibility):'
+    find /opt/community3 -name '*.py' -printf '%h\n' | sort -u
+    printf '\n%s\n' 'Usage: vol-community Silva_Multi_Yara multiyara.MultiYara --help'
+    exit 0
+fi
+collection=$1
+shift
+case "$collection" in
+    /*|*..*) printf '%s\n' 'Use a relative directory inside /opt/community3.' >&2; exit 2 ;;
+esac
+plugin_dir="/opt/community3/$collection"
+if [ ! -d "$plugin_dir" ]; then
+    printf 'Unknown collection: %s\n' "$collection" >&2
+    exit 2
+fi
+mkdir -p /cache/volatility3 /cache/symbols
+exec /opt/venv/bin/vol --cache-path /cache/volatility3 -s '/cache/symbols;/symbols' -p "$plugin_dir" "$@"
